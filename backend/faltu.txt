@@ -1,0 +1,66 @@
+flood-detection-project/
+│
+├── backend/
+│   ├── app.py              # Flask server (backend)
+│   ├── model.pkl           # Your ML model (when ready)
+│   ├── data/
+│   │   └── sensor_data.json # temporary or simulated data
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── package.json
+│   ├── src/
+│   │   ├── App.jsx
+│   │   
+│   │     
+│
+└── README.md
+
+Sensor Data (POST) ---> Flask Backend ---> ML Model ---> Prediction
+                                              |
+                                              V
+                                       Store in Database
+
+
+uml code
+@startuml
+title Flood Detection System Flow
+
+start
+
+:IoT Sensors collect data;
+note right
+  Water level
+  Rainfall
+  Temperature
+end note
+
+:Send data to Backend (Flask API);
+
+:Backend sends data to ML Model;
+
+:ML Model predicts flood risk;
+note right
+  Safe / Warning / Flood Risk
+end note
+
+:Backend receives prediction;
+
+if (Store prediction?) then (yes)
+  :Store in database;
+endif
+
+:Send prediction + readings to Frontend;
+
+:Frontend displays data;
+note right
+  Color-coded alerts:
+  Green: Safe
+  Yellow: Warning
+  Red: Flood Risk
+end note
+
+stop
+@enduml
