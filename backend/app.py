@@ -7,10 +7,11 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from datetime import datetime
 import numpy as np
+from flask import send_from_directory
 
 # --- Configuration & Model Loading ---
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), "static"), static_url_path="")
 CORS(app, origins=['*'])  
 socketio = SocketIO(app, cors_allowed_origins="*")
 
@@ -118,7 +119,17 @@ def update_from_iot_device():
     except Exception as e:
         print(f"!!! Error in /update-sensors: {e} !!!")
         return jsonify({'error': f'An internal server error occurred: {str(e)}'}), 500
-
+# --- Serve Frontend Static Files ---
+@app.route('/<path:path>')
+def serve_static_files(path):
+    static_dir = app.static_folder
+    
+    # If requested file exists in static folder, serve it
+    if path and os.path.exists(os.path.join(static_dir, path)):
+        return send_from_directory(static_dir, path)
+    
+    # File not found → return 404 or JSON error
+    return {"error": "File not found"}, 404
 # --- Run the App ---
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))

@@ -2,8 +2,17 @@ services:
   - type: web
     name: flood-detection
     env: python
-    buildCommand: pip install -r requirements.txt
+    branch: main
+    buildCommand: |
+      # install python deps later via pip (Render runs buildCommand before start); install node & build frontend
+      cd frontend
+      npm ci
+      npm run build
+      # move frontend build into backend static folder
+      rm -rf ../backend/static
+      mkdir -p ../backend/static
+      cp -r dist/* ../backend/static/
+      cd ..
+      pip install -r requirements.txt
     startCommand: gunicorn -k eventlet -w 1 backend.app:app
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+    plan: free
