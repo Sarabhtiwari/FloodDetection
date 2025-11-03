@@ -4,14 +4,13 @@ import os
 import time
 import joblib
 import pandas as pd
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from datetime import datetime
 import numpy as np
-from flask import send_from_directory
-# --- Configuration & Model Loading ---
 
+# --- Configuration & Model Loading ---
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), "static"), static_url_path="")
 CORS(app, origins=['*'])  
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -29,7 +28,6 @@ except Exception as e:
     print(f"!!! An error occurred loading the model: {e} !!!")
 
 # --- Socket.IO Event Handlers ---
-
 @socketio.on('connect')
 def handle_connect():
     print(f'Client connected: {request.sid}')
@@ -40,7 +38,6 @@ def handle_disconnect():
     print(f'Client disconnected: {request.sid}')
 
 # --- HTTP Route for IoT Device ---
-
 @app.route('/update-sensors', methods=['POST'])
 def update_from_iot_device():
     if model is None:
@@ -51,8 +48,7 @@ def update_from_iot_device():
         if not data:
             return jsonify({'error': 'No JSON data provided.'}), 400
 
-        # --- 1. Extract Features from Sensor (using simple keys) ---
-        # These keys MUST match your sensor_simulator.py
+        # --- 1. Extract Features from Sensor ---
         sensor_data = {
             'latitude': float(data['latitude']),
             'longitude': float(data['longitude']),
@@ -66,8 +62,7 @@ def update_from_iot_device():
             'soilType': str(data['soilType']),
         }
 
-        # --- 2. Prepare Data for Model (using model's required names) ---
-        # This DataFrame MUST use the exact column names your model was trained on.
+        # --- 2. Prepare Data for Model ---
         model_input_data = {
             'Latitude': sensor_data['latitude'],
             'Longitude': sensor_data['longitude'],
@@ -92,7 +87,6 @@ def update_from_iot_device():
         # --- 3. Make Prediction ---
         prediction_val = model.predict(input_df)[0]
         probability_matrix = model.predict_proba(input_df)
-        
         class_1_index = np.where(model.classes_ == 1)[0][0]
         flood_probability = float(probability_matrix[0][class_1_index])
 
@@ -102,11 +96,9 @@ def update_from_iot_device():
             'message': 'Flood Likely' if int(prediction_val) == 1 else 'No Flood Likely'
         }
 
-        # --- 4. Broadcast Data via Socket.IO (using SIMPLE keys) ---
-        # We broadcast the simple keys (from sensor_data)
-        # because this is what the frontend (App.jsx) will expect.
+        # --- 4. Broadcast Data via Socket.IO ---
         broadcast_data = {
-            **sensor_data, # This now contains simple keys like 'rainfall_mm'
+            **sensor_data,
             'prediction': prediction_result,
             'last_updated': datetime.utcnow().isoformat() + 'Z'
         }
@@ -120,17 +112,33 @@ def update_from_iot_device():
     except Exception as e:
         print(f"!!! Error in /update-sensors: {e} !!!")
         return jsonify({'error': f'An internal server error occurred: {str(e)}'}), 500
+
 # --- Serve Frontend Static Files ---
+
+# Root route → serves index.html
+@app.route('/')
+def index():
+    index_path = os.path.join(app.static_folder, 'index.html')
+    if os.path.exists(index_path):
+        return send_from_directory(app.static_folder, 'index.html')
+    return {"error": "index.html not found"}, 404
+
+# Favicon route
+@app.route('/favicon.ico')
+def favicon():
+    favicon_path = os.path.join(app.static_folder, 'favicon.ico')
+    if os.path.exists(favicon_path):
+        return send_from_directory(app.static_folder, 'favicon.ico')
+    return '', 204  # No Content if favicon missing
+
+# Static file route
 @app.route('/<path:path>')
 def serve_static_files(path):
-    static_dir = app.static_folder
-    
-    # If requested file exists in static folder, serve it
-    if path and os.path.exists(os.path.join(static_dir, path)):
-        return send_from_directory(static_dir, path)
-    
-    # File not found → return 404 or JSON error
+    file_path = os.path.join(app.static_folder, path)
+    if os.path.exists(file_path):
+        return send_from_directory(app.static_folder, path)
     return {"error": "File not found"}, 404
+
 # --- Run the App ---
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
@@ -140,4 +148,3 @@ if __name__ == '__main__':
     else:
         # Development
         socketio.run(app, debug=True, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
-
