@@ -5,4 +5,6 @@ python-socketio>=5.0
 eventlet        # socketio async server; or use gevent
 joblib
 numpy
+gunicorn==21.2.0
+requests==2.31.0
 scikit-learn    # if your model depends on it
