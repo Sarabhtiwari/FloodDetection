@@ -4,7 +4,9 @@ import { io } from "socket.io-client";
 // --- Configuration ---
 // Connect to the Flask-SocketIO server
 // Make sure this matches the port in app_socket.py
-const SOCKET_URL = "http://localhost:5000";
+const SOCKET_URL = process.env.NODE_ENV === "production"
+  ? process.env.REACT_APP_BACKEND_URL
+  : "http://localhost:5000";
 
 // This is the initial state for the dashboard, using the correct simple keys
 const defaultData = {

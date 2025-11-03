@@ -11,10 +11,10 @@ import numpy as np
 # --- Configuration & Model Loading ---
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=['*'])  
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-MODEL_FILENAME = 'model.pkl'
+MODEL_FILENAME = os.path.join(os.path.dirname(__file__), 'model.pkl')
 model = None
 
 try:
@@ -121,6 +121,11 @@ def update_from_iot_device():
 
 # --- Run the App ---
 if __name__ == '__main__':
-    print("--- Starting Flask-SocketIO Server ---")
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True)
+    port = int(os.environ.get("PORT", 5000))
+    if os.environ.get('RENDER'):
+        # Production on Render
+        socketio.run(app, host='0.0.0.0', port=port)
+    else:
+        # Development
+        socketio.run(app, debug=True, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
 
