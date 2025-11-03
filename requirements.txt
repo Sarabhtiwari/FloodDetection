@@ -7,7 +7,7 @@ joblib
 numpy
 gunicorn==21.2.0
 requests==2.31.0
-scikit-learn    # if your model depends on it
+scikit-learn==1.6.1    # if your model depends on it
 pandas
 Werkzeug==2.3.7
 
