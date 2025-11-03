@@ -1,2 +1,8 @@
-flask 
+Flask>=2.0
 flask-cors
+flask-socketio
+python-socketio>=5.0
+eventlet        # socketio async server; or use gevent
+joblib
+numpy
+scikit-learn    # if your model depends on it
