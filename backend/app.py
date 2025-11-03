@@ -1,3 +1,5 @@
+import eventlet
+eventlet.monkey_patch()
 import os
 import time
 import joblib
@@ -8,7 +10,6 @@ from flask_socketio import SocketIO, emit
 from datetime import datetime
 import numpy as np
 from flask import send_from_directory
-
 # --- Configuration & Model Loading ---
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), "static"), static_url_path="")
