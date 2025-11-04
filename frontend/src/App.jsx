@@ -157,11 +157,11 @@ export default function App() {
                 value={data.discharge_m3s}
               />
               <Metric title="Water Level (m)" value={data.waterLevel_m} />
-              <Metric title="Elevation (m)" value={data.elevation_m} />
-              <Metric title="Land Cover" value={data.landCover} />
-              <Metric title="Soil Type" value={data.soilType} />
-              <Metric title="Latitude" value={data.latitude} />
-              <Metric title="Longitude" value={data.longitude} />
+              {/* <Metric title="Elevation (m)" value={data.elevation_m} /> */}
+              {/* <Metric title="Land Cover" value={data.landCover} /> */}
+              {/* <Metric title="Soil Type" value={data.soilType} /> */}
+              {/* <Metric title="Latitude" value={data.latitude} /> */}
+              {/* <Metric title="Longitude" value={data.longitude} /> */}
             </div>
             <div className="text-sm text-gray-500 mt-6 pt-4 border-t">
               Last Updated:{" "}
