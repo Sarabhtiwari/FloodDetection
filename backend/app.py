@@ -9,7 +9,7 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from datetime import datetime
 import numpy as np
-from ext_data import send_remaining_data
+from .ext_data import send_remaining_data
 # --- Configuration & Model Loading ---
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), "static"), static_url_path="")
 CORS(app, origins=['*'])  
