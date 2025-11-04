@@ -65,7 +65,7 @@ def handle_disconnect():
 # --- HTTP Route for IoT Device ---
 @app.route('/update-sensors', methods=['POST'])
 def update_from_iot_device():
-    print("--- /update-sensors called ---")
+    # print("--- /update-sensors called ---")
     if model is None:
         return jsonify({'error': 'Model is not loaded on server.'}), 500
 
@@ -75,16 +75,16 @@ def update_from_iot_device():
             return jsonify({'error': 'No JSON data provided.'}), 400
         rem_data = send_remaining_data()
         data.update(rem_data)
-        print(f"Received data: {data}")
+        # print(f"Received data: {data}")
         # --- 1. Extract Features from Sensor ---
         sensor_data = {
             'latitude': float(data['latitude']),
             'longitude': float(data['longitude']),
-            'rainfall_mm': float(data['rainfall_mm']),
-            'temperature_c': float(data['temperature_c']),
-            'humidity_percent': float(data['humidity_percent']),
-            'discharge_m3s': float(data['discharge_m3s']),
-            'waterLevel_m': float(data['waterLevel_m']),
+            'rainfall_mm': float(data['distance2']),
+            'temperature_c': float(data['temperature']),
+            'humidity_percent': float(data['humidity']),
+            'discharge_m3s': float(data['flowRate']),
+            'waterLevel_m': float(data['distance1']),
             'elevation_m': float(data['elevation_m']),
             'landCover': str(data['landCover']),
             'soilType': str(data['soilType']),
