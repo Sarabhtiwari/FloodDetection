@@ -16,11 +16,11 @@ import json
 
 # LOCATION_API_URL = "http://ip-api.com/json"
 
-HARDCODED_ELEVATION_M = 120.5  # Example: 120.5 meters
-HARDCODED_LAND_COVER = "Urban"  # Example: "Urban" or "Agricultural"
+HARDCODED_ELEVATION_M = 98  
+HARDCODED_LAND_COVER = "Urban"  
 HARDCODED_SOIL_TYPE = "Loam"
-HARDCODED_LATITUDE = 25.4922    # MNNIT Main Gate Latitude
-HARDCODED_LONGITUDE = 81.8680   # MNNIT Main Gate Longitude
+HARDCODED_LATITUDE = 25.4922    
+HARDCODED_LONGITUDE = 81.8680   
 
 def send_remaining_data():
 
@@ -80,11 +80,11 @@ def update_from_iot_device():
         sensor_data = {
             'latitude': float(data['latitude']),
             'longitude': float(data['longitude']),
-            'rainfall_mm': float(data['distance2']),
+            'rainfall_mm': float(data['distance2'])/10.0,
             'temperature_c': float(data['temperature']),
             'humidity_percent': float(data['humidity']),
-            'discharge_m3s': float(data['flowRate']),
-            'waterLevel_m': float(data['distance1']),
+            'discharge_m3s': float(data['flowRate'])/60000.0,
+            'waterLevel_m': float(data['distance1'])/100.0,
             'elevation_m': float(data['elevation_m']),
             'landCover': str(data['landCover']),
             'soilType': str(data['soilType']),
@@ -150,14 +150,6 @@ def index():
     if os.path.exists(index_path):
         return send_from_directory(app.static_folder, 'index.html')
     return {"error": "index.html not found"}, 404
-
-# Favicon route
-@app.route('/favicon.ico')
-def favicon():
-    favicon_path = os.path.join(app.static_folder, 'favicon.ico')
-    if os.path.exists(favicon_path):
-        return send_from_directory(app.static_folder, 'favicon.ico')
-    return '', 204  # No Content if favicon missing
 
 # Static file route
 @app.route('/<path:path>')
