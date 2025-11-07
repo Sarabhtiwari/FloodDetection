@@ -80,7 +80,7 @@ def update_from_iot_device():
         sensor_data = {
             'latitude': float(data['latitude']),
             'longitude': float(data['longitude']),
-            'rainfall_mm': float(data['distance2'])/10.0,
+            'rainfall_mm': float(data['distance2'])*10.0,
             'temperature_c': float(data['temperature']),
             'humidity_percent': float(data['humidity']),
             'discharge_m3s': float(data['flowRate']),
