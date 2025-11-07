@@ -153,7 +153,7 @@ export default function App() {
               <Metric title="Temperature (°C)" value={data.temperature_c} />
               <Metric title="Humidity (%)" value={data.humidity_percent} />
               <Metric
-                title="River Discharge (m³/s)"
+                title="River Discharge (L/min)"
                 value={data.discharge_m3s}
               />
               <Metric title="Water Level (m)" value={data.waterLevel_m} />
